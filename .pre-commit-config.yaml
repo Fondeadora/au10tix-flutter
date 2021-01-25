@@ -1,0 +1,13 @@
+repos:
+  - repo: local
+    hooks:
+      - id: flutter-format
+        name: Format Flutter Code
+        entry: flutter format .
+        language: system
+        pass_filenames: false
+      - id: flutter-analyze
+        name: Analyze Flutter Code
+        entry: flutter analyze
+        language: system
+        pass_filenames: false
