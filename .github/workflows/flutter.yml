@@ -1,0 +1,28 @@
+name: Flutter
+on:
+  pull_request:
+    branches:
+      - development
+
+jobs:
+  test:
+    name: Run tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v1
+        with:
+          flutter-version: '1.22.5'
+      - name: Install packages
+        run: flutter pub get
+      - name: Format
+        run: |
+          output=$(flutter format .)
+          echo "$output"
+          test $(grep -c 'Formatted' <<< $output) -eq 0
+      - name: Analyze
+        run: flutter analyze
+      - name: Test
+        run: flutter test
