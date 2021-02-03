@@ -1,0 +1,11 @@
+framework module Au10tixPassiveFaceLivenessUI {
+  umbrella header "Au10tixPassiveFaceLivenessUI-umbrella.h"
+
+  export *
+  module * { export * }
+}
+
+module Au10tixPassiveFaceLivenessUI.Swift {
+    header "Au10tixPassiveFaceLivenessUI-Swift.h"
+    requires objc
+}

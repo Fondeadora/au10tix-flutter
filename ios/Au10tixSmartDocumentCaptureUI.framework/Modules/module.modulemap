@@ -1,0 +1,11 @@
+framework module Au10tixSmartDocumentCaptureUI {
+  umbrella header "Au10tixSmartDocumentCaptureUI-umbrella.h"
+
+  export *
+  module * { export * }
+}
+
+module Au10tixSmartDocumentCaptureUI.Swift {
+    header "Au10tixSmartDocumentCaptureUI-Swift.h"
+    requires objc
+}

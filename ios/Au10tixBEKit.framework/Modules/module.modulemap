@@ -1,0 +1,11 @@
+framework module Au10tixBEKit {
+  umbrella header "Au10tixBEKit-umbrella.h"
+
+  export *
+  module * { export * }
+}
+
+module Au10tixBEKit.Swift {
+    header "Au10tixBEKit-Swift.h"
+    requires objc
+}

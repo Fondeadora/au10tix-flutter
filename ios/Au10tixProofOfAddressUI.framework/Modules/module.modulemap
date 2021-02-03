@@ -1,0 +1,11 @@
+framework module Au10tixProofOfAddressUI {
+  umbrella header "Au10tixProofOfAddressUI-umbrella.h"
+
+  export *
+  module * { export * }
+}
+
+module Au10tixProofOfAddressUI.Swift {
+    header "Au10tixProofOfAddressUI-Swift.h"
+    requires objc
+}

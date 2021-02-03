@@ -1,5 +1,8 @@
 import Flutter
 import UIKit
+import Au10tixCore
+import Au10tixPassiveFaceLivenessUI
+import AVFoundation
 
 public class SwiftAu10tixFlutterPlugin: NSObject, FlutterPlugin {
   public static func register(with registrar: FlutterPluginRegistrar) {
