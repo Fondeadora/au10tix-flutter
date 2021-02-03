@@ -1,0 +1,22 @@
+PODS:
+  - au10tix_flutter (0.0.1):
+    - Flutter
+  - Flutter (1.0.0)
+
+DEPENDENCIES:
+  - au10tix_flutter (from `.symlinks/plugins/au10tix_flutter/ios`)
+  - Flutter (from `Flutter`)
+
+EXTERNAL SOURCES:
+  au10tix_flutter:
+    :path: ".symlinks/plugins/au10tix_flutter/ios"
+  Flutter:
+    :path: Flutter
+
+SPEC CHECKSUMS:
+  au10tix_flutter: d60cb96caa42e8506dfbc87c1f1f7bb434ef349b
+  Flutter: 0e3d915762c693b495b44d77113d4970485de6ec
+
+PODFILE CHECKSUM: aafe91acc616949ddb318b77800a7f51bffa2a4c
+
+COCOAPODS: 1.9.3

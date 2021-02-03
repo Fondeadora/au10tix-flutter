@@ -22,14 +22,18 @@ class Au10tixResponse {
 }
 
 class Au10tixFlutter {
-  static const _channel = MethodChannel('au10tix_flutter');
+  static const _channel = MethodChannel('fondeadora.com/au10tix');
 
-  static Future<Au10tixResponse> verifyId({String token}) async {
-    final args = {
-      'token': token,
-    };
+  static Future<Au10tixResponse> verifyId(String token) async {
+    try {
+      final args = <String, dynamic>{
+        'token': token,
+      };
 
-    await _channel.invokeMethod('verifyId', args);
+      await _channel.invokeMethod('verifyId', args);
+    } catch (e) {
+      print('====> error:: $e');
+    }
 
     return Au10tixResponse(
       DocumentType.passport,
