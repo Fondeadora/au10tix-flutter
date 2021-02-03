@@ -7,7 +7,7 @@
 
 import UIKit
 
-final class IdentificationVC: UIViewController {
+class IdentificationVC: UIViewController {
 
     //MARK: - Properties
     var token = ""

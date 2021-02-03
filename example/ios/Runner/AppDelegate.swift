@@ -7,8 +7,8 @@ import Flutter
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
   ) -> Bool {
-    print("===> AppDelegate ")
-    let controller : FlutterViewController = window?.rootViewController as! FlutterViewController
+    print("===> AppDelegate Sample")
+ /*   let controller : FlutterViewController = window?.rootViewController as! FlutterViewController
     let storyboard : UIStoryboard? = UIStoryboard.init(name: "Main", bundle: nil);
     let channel = FlutterMethodChannel(name: "fondeadora.com/au10tix", binaryMessenger: controller.binaryMessenger)
     channel.setMethodCallHandler {
@@ -24,7 +24,7 @@ import Flutter
           default:
             result(FlutterMethodNotImplemented)
       }
-    }
+    } */
     
     GeneratedPluginRegistrant.register(with: self)
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)

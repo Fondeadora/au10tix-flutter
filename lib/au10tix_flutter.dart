@@ -22,7 +22,7 @@ class Au10tixResponse {
 }
 
 class Au10tixFlutter {
-  static const _channel = MethodChannel('fondeadora.com/au10tix');
+  static const _channel = MethodChannel('au10tix_flutter');
 
   static Future<Au10tixResponse> verifyId(String token) async {
     try {
