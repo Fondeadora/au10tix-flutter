@@ -9,7 +9,6 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-
   au10tix_flutter:
     path: ../
   amazon_cognito_identity_dart_2: ^0.1.24
