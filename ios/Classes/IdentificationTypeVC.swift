@@ -19,12 +19,13 @@ final class IdentificationTypeVC: UIViewController {
 
     //MARK: Properties
     var token: String!
-    var arrFileNames = [String]()
-    var selectedImage: ImageType = .none
+    var selectedImage: ImageType = .frontId
     var identificationSelected = IdentificationType.none
     var flutterResult: FlutterResult!
     var hasSession = false
     var result = Au10tixResult()
+    //FIXME: bsc - if you save locally the image the app crash on ine
+    let saveLocally = true
     
     enum ImageType: String {
         case frontId = "fondeadora_frontId"
@@ -46,8 +47,8 @@ final class IdentificationTypeVC: UIViewController {
         prepare()
         
         //Au10tix
-        //setupAu10tix()
-        //addObserver()
+        setupAu10tix()
+        addObserver()
     }
 
 }
@@ -118,34 +119,24 @@ extension IdentificationTypeVC {
     
     @objc func buttonTapped(sender : UIButton) {
         debugPrint("====> tag::: \(sender.tag)")
-        let dictionary: [String: String] = [
-            "urlFront" : "urlFront",
-            "urlBack" : "urlBack" ,
-            "urlFace": "urlFace"
-        ]
-        self.flutterResult(dictionary)
-        
-        return
-        
        if (!hasSession) {
-            self.showAlert("No tiene session de Au10tix")
+            self.showAlert("Aún no hay sesión válida de Au10tix, inténtalo de nuevo...")
             return
         }
         
-        selectedImage = .frontId
         switch sender.tag {
             case IdentificationType.ine.rawValue:
                 identificationSelected = .ine
+                result.resultType = .ine
                 break
             case IdentificationType.passport.rawValue:
                 identificationSelected = .passport
+                result.resultType = .passport
                 break
             default:
                 break
         }
-        
         self.openSDCUIComponent()
-        
         
     }
     
@@ -197,8 +188,8 @@ extension IdentificationTypeVC {
                                          errorTextColor: UIColor.green,
                                          canUploadImage: true,
                                          showCloseButton: true)
-        
-        let controller = SDCViewController(configs: configs, delegate: self, isFrontSide: selectedImage == .frontId)
+        let subtitle = identificationSelected == .passport ? "Frente de su pasaporte" : ( selectedImage == .frontId ? "Frente de su INE" : "Reverso de su INE" )
+        let controller = SDCViewController(configs: configs, delegate: self, isFrontSide: selectedImage == .frontId, subTitle: subtitle)
         present(controller, animated: true, completion:nil)
     }
     
@@ -208,7 +199,7 @@ extension IdentificationTypeVC {
                                          actionButtonTint: UIColor.green,
                                          titleTextColor: UIColor.green,
                                          errorTextColor: UIColor.green,
-                                         canUploadImage: true,
+                                         canUploadImage: false,
                                          showCloseButton: true)
         
         let controller = PFLViewController(configs: configs, delegate: self)
@@ -230,44 +221,48 @@ extension IdentificationTypeVC {
     }
     
     func saveImage(image:UIImage){
-       /* if let data = image.pngData() {
-            let filename = getDocumentsDirectory().appendingPathComponent("\(selectedImage).png")
-            arrFileNames.append(filename.path)
-            try? data.write(to: filename)
-        }*/
+        var urlFile = ""
+        //if let data = image.pngData() {
+        let data = image.mediumQualityJPEGNSData
+        if saveLocally {
+            debugPrint(">>>>>>>>>>>>> save \(selectedImage.rawValue).png")
+            let filename = getDocumentsDirectory().appendingPathComponent("\(selectedImage.rawValue).png")
+              urlFile = filename.path
+            try? data.write(to: filename, options: .atomic)
+        }else{
+            urlFile = data.base64EncodedString()
+        }
+        
         
         if identificationSelected == .passport {
-            self.result.resultType = .passport
-            self.result.urlFront = "\(selectedImage).png"
+            result.urlFront = urlFile
         }else if identificationSelected == .ine {
-            self.result.resultType = .ine
             if selectedImage == .frontId {
-                self.result.urlFront = "\(selectedImage).png"
+                result.urlFront = urlFile
             }else{
-                self.result.urlBack = "\(selectedImage).png"
+                result.urlBack = urlFile
             }
         }else{
-            self.result.urlFace = "\(selectedImage).png"
+            result.urlFace = urlFile
         }
         
         if selectedImage == .face {
-            debugPrint("=====> call Flutter")
             let dictionary: [String: String] = [
                 "urlFront" : result.urlFront,
                 "urlBack" : result.urlBack,
                 "urlFace": result.urlFace
             ]
             self.flutterResult(dictionary)
+            dismiss(animated: true)
         } else if selectedImage == .frontId && identificationSelected == .ine {
-            self.selectedImage = .backId
-            dismiss(animated: false) {
-                sleep(2)
+            selectedImage = .backId
+            dismiss(animated: true) {
                 self.openSDCUIComponent()
             }
         }else{
-            dismiss(animated: false) {
-                sleep(2)
-                self.selectedImage = .face
+            identificationSelected = .selfie
+            selectedImage = .face
+            dismiss(animated: true) {
                 self.openPFLUIComponent()
             }
         }
@@ -316,8 +311,6 @@ extension IdentificationTypeVC {
 extension IdentificationTypeVC: Au10tixSessionDelegate {
     
     func didGetUpdate(_ update: Au10tixSessionUpdate) {
-        //debugPrint(" update -\(update)")
-        
         if let documentSessionUpdate = update as? SmartDocumentCaptureSessionUpdate {
             let result = ["blurScore \(documentSessionUpdate.blurScore)",
                     "reflectionScore \(documentSessionUpdate.reflectionScore)",
@@ -354,6 +347,7 @@ extension IdentificationTypeVC: Au10tixSessionDelegate {
             guard let resultImage = UIImage(data: result.imageData),
                   result.isAnalyzed,
                   result.faceError == nil else {
+                
                 debugPrint(">>>> Error:: \(getFaceErrortStringValue(result.faceError))")
                 return
             }
@@ -364,7 +358,7 @@ extension IdentificationTypeVC: Au10tixSessionDelegate {
                 debugPrint(">>>> Error:: image from SmartDocumentCaptureSessionResult")
                 return
             }
-            debugPrint("\(selectedImage.rawValue) cool!!!")
+            debugPrint("===> before saveImage \(selectedImage.rawValue) ")
             saveImage(image: resultImage)
         }
         

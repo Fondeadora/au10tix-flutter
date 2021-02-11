@@ -27,8 +27,6 @@ public class SwiftAu10tixFlutterPlugin: NSObject, FlutterPlugin {
 
     debugPrint("====> SwiftAu10tixFlutterPlugin initializeSdk  jwtKey:: \(jwtKey)")
     let window: UIWindow = ((UIApplication.shared.delegate?.window)!)!
-    
-    
     let identificationVC = IdentificationTypeVC()
     identificationVC.token = jwtKey
     identificationVC.flutterResult = result

@@ -1,6 +1,6 @@
 # au10tix_flutter
 
-A new flutter plugin project.
+An Au10tix extension plugin using native SDK
 
 ## Getting Started
 

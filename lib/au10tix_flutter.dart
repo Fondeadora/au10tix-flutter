@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:collection';
 
 import 'package:flutter/services.dart';
 
@@ -37,21 +36,16 @@ class Au10tixFlutter {
         'token': token,
       };
 
-      HashMap<String, String> map =
-          await _channel.invokeMethod('verifyId', args);
-      urlFront = map[0];
-      urlBack = map[1];
-      urlFace = map[2];
-      type = urlFront == '' ? DocumentType.passport : DocumentType.id;
+      Map<String, dynamic> map = Map<String, dynamic>.from(
+          await _channel.invokeMethod('verifyId', args));
+      urlFront = map['urlFront'];
+      urlBack = map['urlBack'];
+      urlFace = map['urlFace'];
+      type = urlBack == '' ? DocumentType.passport : DocumentType.id;
     } catch (e) {
       print('====> error:: $e');
     }
 
-    return Au10tixResponse(
-      type,
-      urlFront,
-      urlBack,
-      urlFace,
-    );
+    return Au10tixResponse(type, urlFront, urlBack, urlFace);
   }
 }

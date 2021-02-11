@@ -12,6 +12,4 @@ class Au10tixResult: NSObject {
     @objc dynamic var urlFront = ""
     @objc dynamic var urlBack = ""
     @objc dynamic var urlFace = ""
-    
-    
 }
