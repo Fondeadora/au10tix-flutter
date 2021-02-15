@@ -47,8 +47,8 @@ final class IdentificationTypeVC: UIViewController {
         prepare()
         
         //Au10tix
-        setupAu10tix()
-        addObserver()
+      //  setupAu10tix()
+     //   addObserver()
     }
 
 }
@@ -64,7 +64,7 @@ extension IdentificationTypeVC {
         titleLbl.backgroundColor = UIColor.clear
         titleLbl.widthAnchor.constraint(equalToConstant: w).isActive = true
         titleLbl.heightAnchor.constraint(equalToConstant: 40.0).isActive = true
-        titleLbl.text  = "Selecciona la identificación a probar"
+        titleLbl.text  = "Selecciona la identificación a probar (Se puede modificar el diseño)"
         titleLbl.textColor = UIColor.black
         titleLbl.numberOfLines = 0
         titleLbl.adjustsFontSizeToFitWidth = true
