@@ -15,7 +15,7 @@ A new flutter plugin project.
   s.source           = { :path => '.' }
   s.source_files = 'Classes/**/*'
   s.dependency 'Flutter'
-  s.platform = :ios, '13.0'
+  s.platform = :ios, '11.0'
   s.vendored_frameworks = 'Au10DetectorManager.framework','Au10SourceManager.framework','Au10tixBaseUI.framework','Au10tixBEKit.framework','Au10tixCore.framework','Au10tixPassiveFaceLivenessKit.framework','Au10tixPassiveFaceLivenessUI.framework', 'Au10tixProofOfAddressKit.framework', 'Au10tixProofOfAddressUI.framework', 'Au10tixSmartDocumentCaptureKit.framework', 'Au10tixSmartDocumentCaptureUI.framework'
 
   # Flutter.framework does not contain a i386 slice.
