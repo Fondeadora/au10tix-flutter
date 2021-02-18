@@ -16,7 +16,7 @@ A new flutter plugin project.
   s.source_files = 'Classes/**/*'
   s.dependency 'Flutter'
   s.platform = :ios, '11.0'
-  s.vendored_frameworks = 'Au10DetectorManager.framework','Au10SourceManager.framework','Au10tixBaseUI.framework','Au10tixBEKit.framework','Au10tixCore.framework','Au10tixPassiveFaceLivenessKit.framework','Au10tixPassiveFaceLivenessUI.framework', 'Au10tixProofOfAddressKit.framework', 'Au10tixProofOfAddressUI.framework', 'Au10tixSmartDocumentCaptureKit.framework', 'Au10tixSmartDocumentCaptureUI.framework'
+  s.vendored_frameworks = 'Au10DetectorManager.framework','Au10SourceManager.framework','Au10tixBaseUI.framework','Au10tixBEKit.framework','Au10tixCore.framework','Au10tixPassiveFaceLivenessKit.framework','Au10tixPassiveFaceLivenessUI.framework', 'Au10tixSmartDocumentCaptureKit.framework', 'Au10tixSmartDocumentCaptureUI.framework'
 
   # Flutter.framework does not contain a i386 slice.
   s.pod_target_xcconfig = { 'DEFINES_MODULE' => 'YES', 'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'i386' }
