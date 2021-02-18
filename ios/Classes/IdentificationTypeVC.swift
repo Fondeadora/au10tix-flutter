@@ -19,6 +19,8 @@ final class IdentificationTypeVC: UIViewController {
 
     //MARK: Properties
     var token: String!
+    //TODO: bsc: allow 
+    var onlyTake = IdentificationType.none
     var selectedImage: ImageType = .frontId
     var identificationSelected = IdentificationType.none
     var flutterResult: FlutterResult!
@@ -38,7 +40,26 @@ final class IdentificationTypeVC: UIViewController {
         case ine
         case passport
         case selfie
+        case resident
         case none
+    }
+    
+    var strIdentification:String {
+        var res = ""
+        switch result.resultType {
+            case .ine:
+                res = "ine"
+                break
+            case .passport:
+                res = "passport"
+                break
+            case .resident:
+                res = "residentCard"
+                break
+            default:
+                break
+        }
+        return res
     }
     
     //MARK: View Cycle
@@ -47,8 +68,8 @@ final class IdentificationTypeVC: UIViewController {
         prepare()
         
         //Au10tix
-      //  setupAu10tix()
-     //   addObserver()
+        setupAu10tix()
+        addObserver()
     }
 
 }
@@ -80,6 +101,16 @@ extension IdentificationTypeVC {
         ineBtn.tag = IdentificationType.ine.rawValue
         ineBtn.addTarget(self, action: #selector(self.buttonTapped), for: .touchUpInside)
        
+        //Resident btn
+        let residentBtn = UIButton()
+        residentBtn.setTitle("FM3", for: .normal)
+        residentBtn.heightAnchor.constraint(equalToConstant: 40.0).isActive = true
+        residentBtn.widthAnchor.constraint(equalToConstant: w).isActive = true
+        residentBtn.backgroundColor = .blue
+        residentBtn.setTitleColor(UIColor.white, for: .normal)
+        residentBtn.tag = IdentificationType.resident.rawValue
+        residentBtn.addTarget(self, action: #selector(self.buttonTapped), for: .touchUpInside)
+        
         //Passport btn
         let passportBtn = UIButton()
         passportBtn.setTitle("Passport", for: .normal)
@@ -99,6 +130,7 @@ extension IdentificationTypeVC {
 
         stackView.addArrangedSubview(titleLbl)
         stackView.addArrangedSubview(ineBtn)
+        stackView.addArrangedSubview(residentBtn)
         stackView.addArrangedSubview(passportBtn)
         stackView.translatesAutoresizingMaskIntoConstraints = false
 
@@ -128,6 +160,10 @@ extension IdentificationTypeVC {
             case IdentificationType.ine.rawValue:
                 identificationSelected = .ine
                 result.resultType = .ine
+                break
+            case IdentificationType.resident.rawValue:
+                identificationSelected = .resident
+                result.resultType = .resident
                 break
             case IdentificationType.passport.rawValue:
                 identificationSelected = .passport
@@ -188,7 +224,8 @@ extension IdentificationTypeVC {
                                          errorTextColor: UIColor.green,
                                          canUploadImage: true,
                                          showCloseButton: true)
-        let subtitle = identificationSelected == .passport ? "Frente de su pasaporte" : ( selectedImage == .frontId ? "Frente de su INE" : "Reverso de su INE" )
+        let identification = identificationSelected == .ine ? "INE" : (identificationSelected == .resident ? "FM3" : "" )
+        let subtitle = identificationSelected == .passport ? "Frente de su pasaporte" : ( selectedImage == .frontId ? "Frente de su \(identification)" : "Reverso de su \(identification)" )
         let controller = SDCViewController(configs: configs, delegate: self, isFrontSide: selectedImage == .frontId, subTitle: subtitle)
         present(controller, animated: true, completion:nil)
     }
@@ -222,8 +259,8 @@ extension IdentificationTypeVC {
     
     func saveImage(image:UIImage){
         var urlFile = ""
-        //if let data = image.pngData() {
-        let data = image.mediumQualityJPEGNSData
+        
+        let data = image.lowQualityJPEGNSData
         if saveLocally {
             debugPrint(">>>>>>>>>>>>> save \(selectedImage.rawValue).png")
             let filename = getDocumentsDirectory().appendingPathComponent("\(selectedImage.rawValue).png")
@@ -236,7 +273,7 @@ extension IdentificationTypeVC {
         
         if identificationSelected == .passport {
             result.urlFront = urlFile
-        }else if identificationSelected == .ine {
+        }else if identificationSelected == .ine || identificationSelected == .resident {
             if selectedImage == .frontId {
                 result.urlFront = urlFile
             }else{
@@ -250,11 +287,12 @@ extension IdentificationTypeVC {
             let dictionary: [String: String] = [
                 "urlFront" : result.urlFront,
                 "urlBack" : result.urlBack,
-                "urlFace": result.urlFace
+                "urlFace": result.urlFace,
+                "type": strIdentification
             ]
             self.flutterResult(dictionary)
             dismiss(animated: true)
-        } else if selectedImage == .frontId && identificationSelected == .ine {
+        } else if selectedImage == .frontId && (identificationSelected == .ine || identificationSelected == .resident) {
             selectedImage = .backId
             dismiss(animated: true) {
                 self.openSDCUIComponent()
