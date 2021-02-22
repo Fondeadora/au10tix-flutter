@@ -7,9 +7,9 @@
 
 import Foundation
 
+
 class Au10tixResult: NSObject {
     dynamic var resultType: IdentificationTypeVC.IdentificationType = .none
-    @objc dynamic var urlFront = ""
-    @objc dynamic var urlBack = ""
-    @objc dynamic var urlFace = ""
+    dynamic var isFront = true
+    @objc dynamic var urlImage = ""
 }

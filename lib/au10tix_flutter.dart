@@ -3,46 +3,37 @@ import 'package:flutter/services.dart';
 
 class Au10tixResponse {
   final String type;
-  final String documentFrontPath;
-  final String documentBackPath;
-  final String selfiePath;
+  final bool isFront:
+  final String imagePath;
 
   Au10tixResponse(
     this.type,
-    this.documentFrontPath,
-    this.documentBackPath,
-    this.selfiePath,
+    this.isFront,
+    this.imagePath,
   );
 }
 
 class Au10tixFlutter {
   static const _channel = MethodChannel('au10tix_flutter');
 
-  static Future<Au10tixResponse> verifyId(String token) async {
-    String type = '';
-    String urlFront = '';
-    String urlBack = '';
-    String urlFace = '';
-
+  static Future<Au10tixResponse> verifyId(String token, bool isFront, String identification) async {
     try {
       final args = <String, dynamic>{
         'token': token,
+        'isFront': isFront,
+        'identification': identification,
       };
 
       Map<String, dynamic> map = Map<String, dynamic>.from(
           await _channel.invokeMethod('verifyId', args));
-      if (map.isNotEmpty &&
-          map.containsKey('urlFront') &&
-          map.containsKey('urlFace')) {
-        urlFront = map['urlFront'];
-        urlBack = map['urlBack'];
-        urlFace = map['urlFace'];
-        type = map['type'];
-      }
+      String urlImage = map['urlImage'];
+      bool isFrontRes = map['isFront'];
+      String type = map['type'];
+      return Au10tixResponse(type, isFrontRes, urlImage);
     } catch (e) {
-      print('====> error:: $e');
+      Log.e('====> error:: $e');
     }
 
-    return Au10tixResponse(type, urlFront, urlBack, urlFace);
+    return null;
   }
 }

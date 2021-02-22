@@ -19,24 +19,14 @@ final class IdentificationTypeVC: UIViewController {
 
     //MARK: Properties
     var token: String!
-    //TODO: bsc: allow 
-    var onlyTake = IdentificationType.none
-    var selectedImage: ImageType = .frontId
-    var identificationSelected = IdentificationType.none
+    var result: Au10tixResult!
     var flutterResult: FlutterResult!
     var hasSession = false
-    var result = Au10tixResult()
-    //FIXME: bsc - if you save locally the image the app crash on ine
-    let saveLocally = true
+    var loadedToken = false
     
-    enum ImageType: String {
-        case frontId = "fondeadora_frontId"
-        case backId  = "fondeadora_backId"
-        case face    = "fondeadora_face"
-        case none    = ""
-    }
+    var spinner = UIActivityIndicatorView(style: .whiteLarge)
     
-    enum IdentificationType: Int {
+    enum IdentificationType: String {
         case ine
         case passport
         case selfie
@@ -56,6 +46,8 @@ final class IdentificationTypeVC: UIViewController {
             case .resident:
                 res = "residentCard"
                 break
+            case .selfie:
+                res = "selfie"
             default:
                 break
         }
@@ -64,118 +56,51 @@ final class IdentificationTypeVC: UIViewController {
     
     //MARK: View Cycle
     override func loadView() {
+        
         //UI
         prepare()
         
         //Au10tix
         setupAu10tix()
         addObserver()
+        
     }
 
 }
 
 //MARK: - UI
 extension IdentificationTypeVC {
-    private func prepare(){
-        
-        let w:CGFloat = 300.0
-        
-        //Text Label
-        let titleLbl = UILabel()
-        titleLbl.backgroundColor = UIColor.clear
-        titleLbl.widthAnchor.constraint(equalToConstant: w).isActive = true
-        titleLbl.heightAnchor.constraint(equalToConstant: 40.0).isActive = true
-        titleLbl.text  = "Selecciona la identificación a probar (Se puede modificar el diseño)"
-        titleLbl.textColor = UIColor.black
-        titleLbl.numberOfLines = 0
-        titleLbl.adjustsFontSizeToFitWidth = true
-        titleLbl.textAlignment = .center
-        
-        //INE btn
-        let ineBtn = UIButton()
-        ineBtn.setTitle("INE", for: .normal)
-        ineBtn.heightAnchor.constraint(equalToConstant: 40.0).isActive = true
-        ineBtn.widthAnchor.constraint(equalToConstant: w).isActive = true
-        ineBtn.backgroundColor = .blue
-        ineBtn.setTitleColor(UIColor.white, for: .normal)
-        ineBtn.tag = IdentificationType.ine.rawValue
-        ineBtn.addTarget(self, action: #selector(self.buttonTapped), for: .touchUpInside)
-       
-        //Resident btn
-        let residentBtn = UIButton()
-        residentBtn.setTitle("FM3", for: .normal)
-        residentBtn.heightAnchor.constraint(equalToConstant: 40.0).isActive = true
-        residentBtn.widthAnchor.constraint(equalToConstant: w).isActive = true
-        residentBtn.backgroundColor = .blue
-        residentBtn.setTitleColor(UIColor.white, for: .normal)
-        residentBtn.tag = IdentificationType.resident.rawValue
-        residentBtn.addTarget(self, action: #selector(self.buttonTapped), for: .touchUpInside)
-        
-        //Passport btn
-        let passportBtn = UIButton()
-        passportBtn.setTitle("Passport", for: .normal)
-        passportBtn.heightAnchor.constraint(equalToConstant: 40.0).isActive = true
-        passportBtn.widthAnchor.constraint(equalToConstant: w).isActive = true
-        passportBtn.backgroundColor = .blue
-        passportBtn.setTitleColor(UIColor.white, for: .normal)
-        passportBtn.tag = IdentificationType.passport.rawValue
-        passportBtn.addTarget(self, action: #selector(self.buttonTapped), for: .touchUpInside)
-
-        //Stack View
-        let stackView   = UIStackView()
-        stackView.axis  = NSLayoutConstraint.Axis.vertical
-        stackView.distribution  = UIStackView.Distribution.equalSpacing
-        stackView.alignment = UIStackView.Alignment.center
-        stackView.spacing   = 40.0
-
-        stackView.addArrangedSubview(titleLbl)
-        stackView.addArrangedSubview(ineBtn)
-        stackView.addArrangedSubview(residentBtn)
-        stackView.addArrangedSubview(passportBtn)
-        stackView.translatesAutoresizingMaskIntoConstraints = false
-
-        
+    
+    private func prepare() {
         view = UIView()
-        view.backgroundColor = .white
-        
-        self.view.addSubview(stackView)
+        view.backgroundColor = UIColor.white
 
-        //Constraints
-        stackView.centerXAnchor.constraint(equalTo: self.view.centerXAnchor).isActive = true
-        stackView.centerYAnchor.constraint(equalTo: self.view.centerYAnchor).isActive = true
-    }
-}
+        spinner.translatesAutoresizingMaskIntoConstraints = false
+        spinner.startAnimating()
+        spinner.color = UIColor.black
+        view.addSubview(spinner)
 
-//MARK: - Actions
-extension IdentificationTypeVC {
-    
-    @objc func buttonTapped(sender : UIButton) {
-        debugPrint("====> tag::: \(sender.tag)")
-        if (!hasSession) {
-            self.showAlert("Aún no hay sesión válida de Au10tix, inténtalo de nuevo...")
-            return
-        }
+        spinner.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        spinner.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
         
-        switch sender.tag {
-            case IdentificationType.ine.rawValue:
-                identificationSelected = .ine
-                result.resultType = .ine
-                break
-            case IdentificationType.resident.rawValue:
-                identificationSelected = .resident
-                result.resultType = .resident
-                break
-            case IdentificationType.passport.rawValue:
-                identificationSelected = .passport
-                result.resultType = .passport
-                break
-            default:
-                break
+        Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { (timer) in
+            if self.loadedToken {
+                timer.invalidate()
+                self.spinner.removeFromSuperview()
+                
+                if self.hasSession {
+                    if self.result.resultType == .selfie {
+                        self.openPFLUIComponent()
+                    }else{
+                        self.openSDCUIComponent()
+                    }
+                }
+            }
         }
-        self.openSDCUIComponent()
     }
     
 }
+
 
 //MARK: - Au10tix
 extension IdentificationTypeVC {
@@ -183,6 +108,7 @@ extension IdentificationTypeVC {
     //MARK: - Initialization
     func setupAu10tix() {
         Au10tixCore.shared.prepare(with: token) { [weak self] result in
+            self?.loadedToken = true
             switch result {
             case .success(let sessionID):
                 self?.hasSession = true
@@ -205,7 +131,10 @@ extension IdentificationTypeVC {
             self.hasSession = false
             self.dismiss(animated: true, completion: nil)
         }))
-        
+        presentAlert(alert)
+    }
+    
+    private func presentAlert(_ alert: UIAlertController){
         if var topController = UIApplication.shared.windows.filter({$0.isKeyWindow}).first?.rootViewController {
             if let presentedViewController = topController.presentedViewController {
                 topController = presentedViewController
@@ -219,26 +148,13 @@ extension IdentificationTypeVC {
     func openSDCUIComponent() {
         let configs = UIComponentConfigs(appLogo: UIImage(),
                                          actionButtonTint: UIColor.green,
-                                         titleTextColor: UIColor.white,
-                                         errorTextColor: UIColor.red,
+                                         titleTextColor: UIColor.green,
+                                         errorTextColor: UIColor.green,
                                          canUploadImage: true,
                                          showCloseButton: true)
-        
-        var subtitle = ""
-        if identificationSelected == .ine && selectedImage == .frontId {
-            subtitle = Localization.frontINETitle
-        }else if identificationSelected == .ine && selectedImage == .backId {
-            subtitle = Localization.backINETitle
-        }else if identificationSelected == .passport {
-            subtitle = Localization.frontPassportTitle
-        }else if identificationSelected == .resident && selectedImage == .frontId {
-            subtitle = Localization.frontFM3Title
-        }else if identificationSelected == .resident && selectedImage == .backId {
-            subtitle = Localization.backFM3Title
-        }
-        
-        let controller = SDCViewController(configs: configs, delegate: self, isFrontSide: selectedImage == .frontId, subTitle: subtitle)
-        
+        let identification = result.resultType == .ine ? "INE" : (result.resultType == .resident ? "FM3" : "" )
+        let subtitle = result.resultType == .passport ? "Frente de su pasaporte" : ( result.isFront ? "Frente de su \(identification)" : "Reverso de su \(identification)" )
+        let controller = SDCViewController(configs: configs, delegate: self, isFrontSide: result.isFront, subTitle: subtitle)
         present(controller, animated: true, completion:nil)
     }
     
@@ -246,21 +162,24 @@ extension IdentificationTypeVC {
     func openPFLUIComponent() {
         let configs = UIComponentConfigs(appLogo: UIImage(),
                                          actionButtonTint: UIColor.green,
-                                         titleTextColor: UIColor.white,
-                                         errorTextColor: UIColor.red,
+                                         titleTextColor: UIColor.green,
+                                         errorTextColor: UIColor.green,
                                          canUploadImage: false,
                                          showCloseButton: true)
         
         let controller = PFLViewController(configs: configs, delegate: self)
-        controller.title = Localization.selfieTitle
         present(controller, animated: true, completion: nil)
     }
+    
     
     // MARK: - UIAlertController
     func showAlert(_ text: String) {
         let alert = UIAlertController(title: "Error", message: text, preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
-        present(alert, animated: true, completion: nil)
+        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: {_ in
+            self.flutterResult(nil)
+            self.dismiss(animated: true, completion: nil)
+        }))
+        presentAlert(alert)
     }
     
     // MARK: - Save Image
@@ -272,50 +191,22 @@ extension IdentificationTypeVC {
     func saveImage(image:UIImage){
         var urlFile = ""
         
-        let data = selectedImage == .face ? image.highQualityJPEGNSData : image.lowQualityJPEGNSData
-        if saveLocally {
-            debugPrint(">>>>>>>>>>>>> save \(selectedImage.rawValue).png")
-            let filename = getDocumentsDirectory().appendingPathComponent("\(selectedImage.rawValue).png")
-              urlFile = filename.path
-            try? data.write(to: filename, options: .atomic)
-        }else{
-            urlFile = data.base64EncodedString()
-        }
+        let data = image.lowQualityJPEGNSData
+        let fullName = "\(result.isFront ? "frente_" : "")\(strIdentification).png"
+        debugPrint(">>>>>>>>>>>>> save \(fullName)")
+        let filename = getDocumentsDirectory().appendingPathComponent(fullName)
+          urlFile = filename.path
+        try? data.write(to: filename, options: .atomic)
         
+        result.urlImage = urlFile
+        let dictionary: [String: Any] = [
+            "urlImage" : result.urlImage,
+            "type": strIdentification,
+            "isFront": result.isFront
+        ]
+        self.flutterResult(dictionary)
+        dismiss(animated: true)
         
-        if identificationSelected == .passport {
-            result.urlFront = urlFile
-        }else if identificationSelected == .ine || identificationSelected == .resident {
-            if selectedImage == .frontId {
-                result.urlFront = urlFile
-            }else{
-                result.urlBack = urlFile
-            }
-        }else{
-            result.urlFace = urlFile
-        }
-        
-        if selectedImage == .face {
-            let dictionary: [String: String] = [
-                "urlFront" : result.urlFront,
-                "urlBack" : result.urlBack,
-                "urlFace": result.urlFace,
-                "type": strIdentification
-            ]
-            self.flutterResult(dictionary)
-            dismiss(animated: true)
-        } else if selectedImage == .frontId && (identificationSelected == .ine || identificationSelected == .resident) {
-            selectedImage = .backId
-            dismiss(animated: true) {
-                self.openSDCUIComponent()
-            }
-        }else{
-            identificationSelected = .selfie
-            selectedImage = .face
-            dismiss(animated: true) {
-                self.openPFLUIComponent()
-            }
-        }
     }
     
     
@@ -408,7 +299,6 @@ extension IdentificationTypeVC: Au10tixSessionDelegate {
                 debugPrint(">>>> Error:: image from SmartDocumentCaptureSessionResult")
                 return
             }
-            debugPrint("===> before saveImage \(selectedImage.rawValue) ")
             saveImage(image: resultImage)
         }
         
