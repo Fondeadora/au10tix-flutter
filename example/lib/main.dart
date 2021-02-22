@@ -21,9 +21,6 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   final _controller = TextEditingController();
-  final _loadLocally = true;
-  final _load2 = false;
-  final _load3 = false;
 
   Au10tixResponse _response;
 
@@ -67,8 +64,8 @@ class _MyAppState extends State<MyApp> {
                   padding: EdgeInsets.all(8.0),
                   splashColor: Colors.blueAccent,
                   onPressed: () async {
-                    Au10tixResponse res =
-                        await Au10tixFlutter.verifyId(_controller.text);
+                    Au10tixResponse res = await Au10tixFlutter.verifyId(
+                        _controller.text, true, "ine");
                     setState(() {
                       _response = res;
                     });

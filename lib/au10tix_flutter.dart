@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 
 class Au10tixResponse {
   final String type;
-  final bool isFront:
+  final bool isFront;
   final String imagePath;
 
   Au10tixResponse(
@@ -16,7 +16,8 @@ class Au10tixResponse {
 class Au10tixFlutter {
   static const _channel = MethodChannel('au10tix_flutter');
 
-  static Future<Au10tixResponse> verifyId(String token, bool isFront, String identification) async {
+  static Future<Au10tixResponse> verifyId(
+      String token, bool isFront, String identification) async {
     try {
       final args = <String, dynamic>{
         'token': token,
@@ -31,7 +32,7 @@ class Au10tixFlutter {
       String type = map['type'];
       return Au10tixResponse(type, isFrontRes, urlImage);
     } catch (e) {
-      Log.e('====> error:: $e');
+      print('====> error:: $e');
     }
 
     return null;
