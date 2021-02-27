@@ -151,10 +151,10 @@ extension IdentificationTypeVC {
     
     @objc func buttonTapped(sender : UIButton) {
         debugPrint("====> tag::: \(sender.tag)")
-       if (!hasSession) {
+     /*  if (!hasSession) {
             self.showAlert("Aún no hay sesión válida de Au10tix, inténtalo de nuevo...")
             return
-        }
+        } */
         
         switch sender.tag {
             case IdentificationType.ine.rawValue:
@@ -173,7 +173,6 @@ extension IdentificationTypeVC {
                 break
         }
         self.openSDCUIComponent()
-        
     }
     
 }
@@ -220,13 +219,26 @@ extension IdentificationTypeVC {
     func openSDCUIComponent() {
         let configs = UIComponentConfigs(appLogo: UIImage(),
                                          actionButtonTint: UIColor.green,
-                                         titleTextColor: UIColor.green,
-                                         errorTextColor: UIColor.green,
+                                         titleTextColor: UIColor.white,
+                                         errorTextColor: UIColor.red,
                                          canUploadImage: true,
                                          showCloseButton: true)
-        let identification = identificationSelected == .ine ? "INE" : (identificationSelected == .resident ? "FM3" : "" )
-        let subtitle = identificationSelected == .passport ? "Frente de su pasaporte" : ( selectedImage == .frontId ? "Frente de su \(identification)" : "Reverso de su \(identification)" )
+        
+        var subtitle = ""
+        if identificationSelected == .ine && selectedImage == .frontId {
+            subtitle = Localization.frontINETitle
+        }else if identificationSelected == .ine && selectedImage == .backId {
+            subtitle = Localization.backINETitle
+        }else if identificationSelected == .passport {
+            subtitle = Localization.frontPassportTitle
+        }else if identificationSelected == .resident && selectedImage == .frontId {
+            subtitle = Localization.frontFM3Title
+        }else if identificationSelected == .resident && selectedImage == .backId {
+            subtitle = Localization.backFM3Title
+        }
+        
         let controller = SDCViewController(configs: configs, delegate: self, isFrontSide: selectedImage == .frontId, subTitle: subtitle)
+        
         present(controller, animated: true, completion:nil)
     }
     
@@ -234,15 +246,15 @@ extension IdentificationTypeVC {
     func openPFLUIComponent() {
         let configs = UIComponentConfigs(appLogo: UIImage(),
                                          actionButtonTint: UIColor.green,
-                                         titleTextColor: UIColor.green,
-                                         errorTextColor: UIColor.green,
+                                         titleTextColor: UIColor.white,
+                                         errorTextColor: UIColor.red,
                                          canUploadImage: false,
                                          showCloseButton: true)
         
         let controller = PFLViewController(configs: configs, delegate: self)
+        controller.title = Localization.selfieTitle
         present(controller, animated: true, completion: nil)
     }
-    
     
     // MARK: - UIAlertController
     func showAlert(_ text: String) {

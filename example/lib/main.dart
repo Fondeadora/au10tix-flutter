@@ -78,59 +78,11 @@ class _MyAppState extends State<MyApp> {
                     style: TextStyle(fontSize: 20.0),
                   ),
                 ),
-                if (_loadLocally) ...[
-                  _getImageContainer(_response.documentFrontPath),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  Text(_response.documentFrontPath),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  Text(_response.documentBackPath),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  //_getImageContainer(_response.documentBackPath),
-                  _getImageContainer(_response.selfiePath),
-                ] else ...[
-                  _getImageData(_response.documentFrontPath),
-                  _getImageData(_response.documentBackPath),
-                  _getImageData(_response.selfiePath),
-                ],
               ],
             ),
           ),
         ),
       ),
     );
-  }
-
-  Widget _getImageData(String _base64) {
-    if (_base64.isEmpty) return Container();
-
-    return Card(
-      child: Container(
-        child: Image.memory(
-          base64Decode(_base64),
-          height: 280,
-          fit: BoxFit.cover,
-        ),
-      ),
-    );
-  }
-
-  Widget _getImageContainer(String urlFile) {
-    return urlFile.isNotEmpty
-        ? Card(
-            child: Container(
-              child: Image.file(
-                new File(urlFile),
-                height: 280,
-                fit: BoxFit.cover,
-              ),
-            ),
-          )
-        : SizedBox();
   }
 }
