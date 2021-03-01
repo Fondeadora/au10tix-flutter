@@ -151,10 +151,10 @@ extension IdentificationTypeVC {
     
     @objc func buttonTapped(sender : UIButton) {
         debugPrint("====> tag::: \(sender.tag)")
-     /*  if (!hasSession) {
+        if (!hasSession) {
             self.showAlert("Aún no hay sesión válida de Au10tix, inténtalo de nuevo...")
             return
-        } */
+        }
         
         switch sender.tag {
             case IdentificationType.ine.rawValue:
@@ -272,7 +272,7 @@ extension IdentificationTypeVC {
     func saveImage(image:UIImage){
         var urlFile = ""
         
-        let data = image.lowQualityJPEGNSData
+        let data = selectedImage == .face ? image.mediumQualityJPEGNSData : image.lowQualityJPEGNSData
         if saveLocally {
             debugPrint(">>>>>>>>>>>>> save \(selectedImage.rawValue).png")
             let filename = getDocumentsDirectory().appendingPathComponent("\(selectedImage.rawValue).png")
