@@ -272,7 +272,7 @@ extension IdentificationTypeVC {
     func saveImage(image:UIImage){
         var urlFile = ""
         
-        let data = selectedImage == .face ? image.mediumQualityJPEGNSData : image.lowQualityJPEGNSData
+        let data = selectedImage == .face ? image.highQualityJPEGNSData : image.lowQualityJPEGNSData
         if saveLocally {
             debugPrint(">>>>>>>>>>>>> save \(selectedImage.rawValue).png")
             let filename = getDocumentsDirectory().appendingPathComponent("\(selectedImage.rawValue).png")
