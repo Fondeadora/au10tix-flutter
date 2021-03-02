@@ -9,11 +9,16 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-
   au10tix_flutter:
     path: ../
-
+  amazon_cognito_identity_dart_2: ^0.1.24
   cupertino_icons: ^1.0.0
+  decimal: ^0.3.5
+  dio: ^3.0.9
+  flutter_fimber: ^0.4.4
+  flutter_i18n: ^0.20.1
+  graphql_flutter: ^4.0.0-beta.6
+  http: ^0.12.1
 
 dev_dependencies:
   flutter_test:

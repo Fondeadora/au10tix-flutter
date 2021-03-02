@@ -1,0 +1,11 @@
+framework module Au10tixBaseUI {
+  umbrella header "Au10tixBaseUI-umbrella.h"
+
+  export *
+  module * { export * }
+}
+
+module Au10tixBaseUI.Swift {
+    header "Au10tixBaseUI-Swift.h"
+    requires objc
+}

@@ -1,0 +1,11 @@
+framework module Au10SourceManager {
+  umbrella header "Au10SourceManager-umbrella.h"
+
+  export *
+  module * { export * }
+}
+
+module Au10SourceManager.Swift {
+    header "Au10SourceManager-Swift.h"
+    requires objc
+}

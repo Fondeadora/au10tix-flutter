@@ -1,0 +1,11 @@
+framework module Au10DetectorManager {
+  umbrella header "detector-manager-umbrella.h"
+
+  export *
+  module * { export * }
+}
+
+module Au10DetectorManager.Swift {
+    header "Au10DetectorManager-Swift.h"
+    requires objc
+}
