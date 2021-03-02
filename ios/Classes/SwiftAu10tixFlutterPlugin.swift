@@ -30,7 +30,7 @@ public class SwiftAu10tixFlutterPlugin: NSObject, FlutterPlugin {
     let identificationVC = IdentificationTypeVC()
     identificationVC.token = jwtKey
     identificationVC.flutterResult = result
-    
+    identificationVC.modalPresentationStyle = .fullScreen //or .overFullScreen for transparency
     window.rootViewController!.present(identificationVC, animated: true, completion: nil)
     
   }
