@@ -19,14 +19,32 @@ final class IdentificationTypeVC: UIViewController {
 
     //MARK: Properties
     var token: String!
+    //TODO: bsc: allow
+    var onlyTake = IdentificationType.none
+    var selectedImage: ImageType = .frontId
+    var identificationSelected = IdentificationType.none
+    var flutterResult: FlutterResult!
+    var hasSession = false
+    var result = Au10tixResult()
+    var loadedToken = false
+    
+    //MARK: Properties
+   /* var token: String!
     var result: Au10tixResult!
     var flutterResult: FlutterResult!
     var hasSession = false
-    var loadedToken = false
+    var loadedToken = false */
     
     var spinner = UIActivityIndicatorView(style: .whiteLarge)
     
-    enum IdentificationType: String {
+    enum ImageType: String {
+        case frontId = "fondeadora_frontId"
+        case backId  = "fondeadora_backId"
+        case face    = "fondeadora_face"
+        case none    = ""
+    }
+    
+    enum IdentificationType: Int {
         case ine
         case passport
         case selfie
@@ -56,14 +74,12 @@ final class IdentificationTypeVC: UIViewController {
     
     //MARK: View Cycle
     override func loadView() {
-        
         //UI
         prepare()
         
         //Au10tix
         setupAu10tix()
         addObserver()
-        
     }
 
 }
@@ -94,9 +110,16 @@ extension IdentificationTypeVC {
                     }else{
                         self.openSDCUIComponent()
                     }
+                }else {
+                    self.dissmissScreen()
                 }
             }
         }
+    }
+    
+    private func dissmissScreen() {
+        self.flutterResult(nil)
+        self.dismiss(animated: true, completion: nil)
     }
     
 }
@@ -152,8 +175,13 @@ extension IdentificationTypeVC {
                                          errorTextColor: UIColor.green,
                                          canUploadImage: true,
                                          showCloseButton: true)
-        let identification = result.resultType == .ine ? "INE" : (result.resultType == .resident ? "FM3" : "" )
-        let subtitle = result.resultType == .passport ? "Frente de su pasaporte" : ( result.isFront ? "Frente de su \(identification)" : "Reverso de su \(identification)" )
+        
+        var subtitle = Localization.frontPassportTitle
+        if result.resultType == .ine {
+            subtitle = result.isFront ? Localization.frontINETitle : Localization.backINETitle
+        }else if result.resultType == .resident {
+            subtitle = result.isFront ? Localization.frontFM3Title : Localization.backFM3Title
+        }
         let controller = SDCViewController(configs: configs, delegate: self, isFrontSide: result.isFront, subTitle: subtitle)
         present(controller, animated: true, completion:nil)
     }
@@ -176,8 +204,7 @@ extension IdentificationTypeVC {
     func showAlert(_ text: String) {
         let alert = UIAlertController(title: "Error", message: text, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "OK", style: .default, handler: {_ in
-            self.flutterResult(nil)
-            self.dismiss(animated: true, completion: nil)
+            self.dissmissScreen()
         }))
         presentAlert(alert)
     }
@@ -191,7 +218,7 @@ extension IdentificationTypeVC {
     func saveImage(image:UIImage){
         var urlFile = ""
         
-        let data = image.lowQualityJPEGNSData
+        let data = selectedImage == .face ? image.highQualityJPEGNSData : image.lowQualityJPEGNSData
         let fullName = "\(result.isFront ? "frente_" : "")\(strIdentification).png"
         debugPrint(">>>>>>>>>>>>> save \(fullName)")
         let filename = getDocumentsDirectory().appendingPathComponent(fullName)
@@ -212,7 +239,6 @@ extension IdentificationTypeVC {
     
     
     //MARK: - Face Recognition Error
-    // Get Results Text Value
     func getResultText(_ result: PassiveFaceLivenessSessionResult) -> String {
         
         return ["isAnalyzed - \(result.isAnalyzed)",
@@ -222,28 +248,27 @@ extension IdentificationTypeVC {
                 "faceError -\(getFaceErrortStringValue(result.faceError))"].joined(separator: "\n")
     }
     
-    // Get FaceError String Value
     func getFaceErrortStringValue(_ error: FaceError?) -> String {
         
         guard let faceError = error else {return "none"}
         
         switch faceError {
-        case .faceAngleTooLarge:
-            return "faceAngleTooLarge"
-        case .faceCropped:
-            return "faceCropped"
-        case .faceNotFound:
-            return "faceNotFound"
-        case .faceTooClose:
-            return "faceTooClose"
-        case .faceTooCloseToBorder:
-            return "faceTooCloseToBorder"
-        case .faceTooSmall:
-            return "faceTooSmall"
-        case .internalError:
-            return "internalError"
-        case .tooManyFaces:
-            return "tooManyFaces"
+            case .faceAngleTooLarge:
+                return "faceAngleTooLarge"
+            case .faceCropped:
+                return "faceCropped"
+            case .faceNotFound:
+                return "faceNotFound"
+            case .faceTooClose:
+                return "faceTooClose"
+            case .faceTooCloseToBorder:
+                return "faceTooCloseToBorder"
+            case .faceTooSmall:
+                return "faceTooSmall"
+            case .internalError:
+                return "internalError"
+            case .tooManyFaces:
+                return "tooManyFaces"
         }
     }
 }
