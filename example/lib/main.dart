@@ -67,8 +67,8 @@ class _MyAppState extends State<MyApp> {
                   padding: EdgeInsets.all(8.0),
                   splashColor: Colors.blueAccent,
                   onPressed: () async {
-                    Au10tixResponse res =
-                        await Au10tixFlutter.verifyId(_controller.text);
+                    Au10tixResponse res = await Au10tixFlutter.verifyId(
+                        token: _controller.text, identification: "INE");
                     setState(() {
                       _response = res;
                     });

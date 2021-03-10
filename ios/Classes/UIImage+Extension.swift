@@ -5,6 +5,8 @@
 //  Created by Brenda SC on 10/02/21.
 //
 
+import UIKit
+
 extension UIImage {
 
     var highestQualityJPEGNSData: Data { return self.jpegData(compressionQuality: 1.0)! }
