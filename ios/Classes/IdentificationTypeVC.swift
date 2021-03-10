@@ -174,24 +174,18 @@ extension IdentificationTypeVC {
         
         let data = selectedImage == Constants.ImageType.face ? image.highQualityJPEGNSData : image.lowQualityJPEGNSData
         
-            debugPrint(">>>>>>>>>>>>> save \(selectedImage.rawValue).png")
-            let filename = getDocumentsDirectory().appendingPathComponent("\(selectedImage.rawValue).png")
-              urlFile = filename.path
-            try? data.write(to: filename, options: .atomic)
+        let filename = getDocumentsDirectory().appendingPathComponent("fondeadora_ob_\(selectedImage.rawValue).png")
+          urlFile = filename.path
+        try? data.write(to: filename, options: .atomic)
         
-        
-        
-        if self.result.resultType == Constants.IdentificationType.passport {
-            result.urlFront = urlFile
-        }else if self.result.resultType == Constants.IdentificationType.ine || self.result.resultType == Constants.IdentificationType.resident {
-            if selectedImage == .frontId {
-                result.urlFront = urlFile
-            }else{
-                result.urlBack = urlFile
-            }
-        }else{
+        if selectedImage == .face {
             result.urlFace = urlFile
+        }else if selectedImage == .frontId {
+            result.urlFront = urlFile
+        }else{
+            result.urlBack = urlFile
         }
+        
         
         if selectedImage == .face {
             let dictionary: [String: String] = [
