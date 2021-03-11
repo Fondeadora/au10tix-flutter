@@ -61,3 +61,23 @@ struct Localization {
     
     
 }
+
+struct Constants {
+    
+    enum IdentificationType: String {
+        case ine = "ine"
+        case passport = "passport"
+        case selfie = "selfie"
+        case resident = "residentCard"
+        case none = "none"
+    }
+    
+    enum ImageType: String {
+        case frontId = "fondeadora_frontId"
+        case backId  = "fondeadora_backId"
+        case face    = "fondeadora_face"
+        case none    = ""
+    }
+    
+    
+}

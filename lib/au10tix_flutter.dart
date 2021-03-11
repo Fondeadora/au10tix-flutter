@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 class Au10tixResponse {
@@ -18,7 +19,8 @@ class Au10tixResponse {
 class Au10tixFlutter {
   static const _channel = MethodChannel('au10tix_flutter');
 
-  static Future<Au10tixResponse> verifyId(String token) async {
+  static Future<Au10tixResponse> verifyId(
+      {@required String token, @required String identification}) async {
     String type = '';
     String urlFront = '';
     String urlBack = '';
@@ -27,6 +29,7 @@ class Au10tixFlutter {
     try {
       final args = <String, dynamic>{
         'token': token,
+        'identification': identification,
       };
 
       Map<String, dynamic> map = Map<String, dynamic>.from(

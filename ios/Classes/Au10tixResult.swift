@@ -8,7 +8,7 @@
 import Foundation
 
 class Au10tixResult: NSObject {
-    dynamic var resultType: IdentificationTypeVC.IdentificationType = .none
+    dynamic var resultType: Constants.IdentificationType = .none
     @objc dynamic var urlFront = ""
     @objc dynamic var urlBack = ""
     @objc dynamic var urlFace = ""
